@@ -1,15 +1,18 @@
-import { BrowserRouter } from "react-router-dom"
-import { AppRouter } from "./assets/router/AppRouter"
-
-function App () {
-
+import { BrowserRouter } from "react-router-dom";
+import { AppRouter } from "./router/AppRouter";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+import 'animate.css';
+function App() {
   return (
     <>
-      <BrowserRouter>
-      <AppRouter />
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <AppRouter />
+        </BrowserRouter>
+      </Provider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

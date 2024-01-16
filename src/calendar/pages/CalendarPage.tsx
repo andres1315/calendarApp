@@ -1,11 +1,15 @@
-import { Calendar, CalendarProps} from 'react-big-calendar'
+import { Calendar} from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { addHours} from 'date-fns'
 import {  NavbarCalendar } from "../components/Navbar"
 import { localizer,getMessagesES } from '../../helpers'
 import { useState } from 'react'
 import { CalendarEvents } from '../components/CalendarEvents'
 import { CalendarModal } from '../components/CalendarModal'
+import { useUiStore } from '../../hooks/useUiStore'
+import { useCalendarStore } from '../../hooks/useCalendarStore'
+import { FabAddNew } from '../components/FabAddNew'
+import { FaPlusCircle,FaRegTrashAlt } from "react-icons/fa";
+import { FabDelete } from '../components/FabDelete'
 
 
 const eventStyleGetter = (event: any, start: Date, end: Date, isSelected: boolean) => {
@@ -19,34 +23,22 @@ const eventStyleGetter = (event: any, start: Date, end: Date, isSelected: boolea
   };
 }
 
-const myEventsList = [
-  {
-    title: 'Cumpleaños jefe',
-    notes:'notes',
-    start: new Date(),
-    end: addHours(new Date(), 1),
-    bgColor: '#3174ad',
-    user:{
-      _id:'123',
-      name:'jose'
-    }
-  }
-]
+
 
 
 
 export const CalendarPage = () => {
   const [lastView, setLastView] = useState<string>(localStorage.getItem('lastView') || 'week')
+  const {onOpenModal} = useUiStore()
+  const {events, activeEvent,setActieEvent} = useCalendarStore()
 
 
-  // ... existing code ...
   const onDoubleClick = (e: any) => {
-  // ... existing code ...
-    console.log('double click',e)
+    onOpenModal()
   }
   
   const onSelect = (e: any) => {
-    console.log('select',e)
+    setActieEvent(e)
   }
   
   const onViewChange = (e: any) => {
@@ -59,7 +51,7 @@ export const CalendarPage = () => {
       <Calendar
         culture='es'
         localizer={localizer}
-        events={myEventsList}
+        events={events}
         defaultView={lastView}
         startAccessor="start"
         endAccessor="end"
@@ -74,6 +66,18 @@ export const CalendarPage = () => {
         onView={onViewChange}
       />
       <CalendarModal />
+      <FabAddNew className='animate__animated animate__pulse animate__infinite'>
+        <FaPlusCircle size={30} />
+      </FabAddNew>
+      {
+        activeEvent && (
+          <FabDelete className='animate__animated animate__pulse animate__infinite'>
+            <FaRegTrashAlt size={30} />
+          </FabDelete>
+        )
+      }
+
+      
     </>
   )
 }

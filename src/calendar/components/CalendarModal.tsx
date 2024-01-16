@@ -1,10 +1,12 @@
+import { FormEvent, useEffect, useState } from "react";
+import { differenceInSeconds,  } from "date-fns";
 import DatePicker,{registerLocale} from "react-datepicker";
-import { addHours, differenceInSeconds,  } from "date-fns";
 import Modal from "react-modal";
 import "react-datepicker/dist/react-datepicker.css";
-import { FormEvent, useState } from "react";
 import es  from 'date-fns/locale/es'
 import Swal from "sweetalert2";
+import { useUiStore } from "../../hooks/useUiStore";
+import { useCalendarStore } from "../../hooks/useCalendarStore";
 
 registerLocale('es', es)
 
@@ -19,20 +21,19 @@ const customStyles = {
 };
 Modal.setAppElement("#root");
 export const CalendarModal = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const {activeEvent, startSavingEvent } = useCalendarStore()
+
+  
   const [formValues, setFormValues] = useState({
-    title: "Evento",
-    notes: "eventoo de prueba",
-    start: new Date(),
-    end: addHours(new Date(),2),
+    title: "",
+    notes: "",
+    start: "",
+    end: "",
   });
 
+  const {isDateModalOpen, onCloseModal} = useUiStore()
 
 
-  const onCloseModal = () => {
-    console.log("close");
-    setIsOpen(false);
-  };
 
   const onDateChange = (date: Date, changing:string) => {
     setFormValues({
@@ -41,24 +42,31 @@ export const CalendarModal = () => {
     })
   }
 
-  const onInputChange=({target})=>{
+  const onInputChange = ({ target }: { target: HTMLInputElement }) => {
     setFormValues({
       ...formValues,
       [target.name]:target.value
     })
   }
 
-  const onSubmit=(e:FormEvent<HTMLFormElement>)=>{
+  const onSubmit=async(e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
     const differenceDate = differenceInSeconds(formValues.end,formValues.start)
     if(isNaN(differenceDate) || differenceDate <=0) return Swal.fire('Error','La fecha de fin debe ser mayor a la de inicio','error')
     if (formValues.title.length === 0) return Swal.fire('Error','El titulo es obligatorio','error')
     console.log(formValues)
+    await startSavingEvent(formValues)
+    onCloseModal()
   }
 
+  useEffect(()=>{
+    if (activeEvent !== null){
+      setFormValues(activeEvent)
+    }
+  },[activeEvent])
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={isDateModalOpen}
       onRequestClose={onCloseModal}
       style={customStyles}
       contentLabel="Example Modal"

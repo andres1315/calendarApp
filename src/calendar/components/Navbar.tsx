@@ -1,6 +1,8 @@
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { useAuthStore } from "../../hooks/useAuthStore";
 
 export const NavbarCalendar = () => {
+  const {startLogout,user} = useAuthStore()
   return (
     <Navbar fluid rounded>
       <Navbar.Brand href="https://flowbite-react.com">
@@ -26,16 +28,16 @@ export const NavbarCalendar = () => {
           }
         >
           <Dropdown.Header>
-            <span className="block text-sm">Bonnie Green</span>
+            <span className="block text-sm">{user.name}</span>
             <span className="block truncate text-sm font-medium">
-              name@flowbite.com
+              {user.email || 'No email'}
             </span>
           </Dropdown.Header>
           <Dropdown.Item>Dashboard</Dropdown.Item>
           <Dropdown.Item>Settings</Dropdown.Item>
           <Dropdown.Item>Earnings</Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item>Sign out</Dropdown.Item>
+          <Dropdown.Item onClick={startLogout}>Sign out</Dropdown.Item>
         </Dropdown>
         <Navbar.Toggle />
       </div>
