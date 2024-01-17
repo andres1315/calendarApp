@@ -4,6 +4,7 @@ import { clearError, onLogin, onLogout } from "../store/auth/authSlice"
 import { useAppDispatch, useAppSelector } from "../store/hooks"
 import Swal from "sweetalert2"
 import { set } from "date-fns"
+import { onLogoutCalendar } from "../store/calendar/calendarSlice"
 
 export const useAuthStore =()=>{
   const {status, user, errorMessage} = useAppSelector(state=>state.auth)
@@ -82,6 +83,7 @@ export const useAuthStore =()=>{
 
   const startLogout=()=>{
     localStorage.removeItem('token')
+    dispatch(onLogoutCalendar())
     dispatch(onLogout({errorMessage:''}))
   }
   return {

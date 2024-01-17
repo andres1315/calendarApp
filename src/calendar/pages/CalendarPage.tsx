@@ -2,7 +2,7 @@ import { Calendar} from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import {  NavbarCalendar } from "../components/Navbar"
 import { localizer,getMessagesES } from '../../helpers'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CalendarEvents } from '../components/CalendarEvents'
 import { CalendarModal } from '../components/CalendarModal'
 import { useUiStore } from '../../hooks/useUiStore'
@@ -10,28 +10,33 @@ import { useCalendarStore } from '../../hooks/useCalendarStore'
 import { FabAddNew } from '../components/FabAddNew'
 import { FaPlusCircle,FaRegTrashAlt } from "react-icons/fa";
 import { FabDelete } from '../components/FabDelete'
+import { useAuthStore } from '../../hooks/useAuthStore'
 
 
-const eventStyleGetter = (event: any, start: Date, end: Date, isSelected: boolean) => {
-  return {
-    className: 'custom-event-class',
-    style: {
-      backgroundColor: '#347cf7',
-      opacity: 0.8,
-      color: 'white',
-    },
-  };
-}
 
 
 
 
 
 export const CalendarPage = () => {
-  const [lastView, setLastView] = useState<string>(localStorage.getItem('lastView') || 'week')
+  const {user } = useAuthStore()
+  const {events, activeEvent,setActieEvent, startLoadingEvents} = useCalendarStore()
   const {onOpenModal} = useUiStore()
-  const {events, activeEvent,setActieEvent} = useCalendarStore()
+  const [lastView, setLastView] = useState<string>(localStorage.getItem('lastView') || 'week')
 
+  const eventStyleGetter = (event: any, start: Date, end: Date, isSelected: boolean) => {
+
+    const isMyEvent = (event.user._id === user.uid) || (event.user.uid === user.uid)
+    return {
+      className: 'custom-event-class',
+      style: {
+        backgroundColor: isMyEvent ? '#347cf7' :'#465660',
+        opacity: 0.8,
+        color: 'white',
+      },
+    };
+  }
+  
 
   const onDoubleClick = (e: any) => {
     onOpenModal()
@@ -45,6 +50,10 @@ export const CalendarPage = () => {
     setLastView(e)
     localStorage.setItem('lastView',e)
   }
+
+  useEffect(()=>{
+    startLoadingEvents()
+  },[])
   return (
     <>
       <NavbarCalendar />  
