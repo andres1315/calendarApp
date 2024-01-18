@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 
 /* const tempEvent ={
-  _id: new Date().getTime().toString(),
+  id: new Date().getTime().toString(),
   title: 'Cumpleaños jefe',
   notes:'notes',
   start: new Date(),
@@ -34,7 +34,7 @@ export const calendarSlice =  createSlice({
       state.events = state.events.map(event => event.id === payload.id ? payload : event)
     
     },
-    onRemoveEvent : (state, ) => {
+    onRemoveEvent : (state ) => {
       state.events = state.events.filter(event => event.id !== state.activeEvent.id)
       state.activeEvent=null
     

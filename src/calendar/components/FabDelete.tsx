@@ -1,8 +1,8 @@
 import { useCalendarStore } from "../../hooks/useCalendarStore";
-import { useUiStore } from "../../hooks/useUiStore";
+
 
 export const FabDelete = ({children, className}:{children:JSX.Element, className?:string}) => {
-  const {onOpenModal} = useUiStore()
+
   const {deleteEvent} = useCalendarStore()
 
   const handleClickDelete=()=>{
