@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { authReducer } from "../../src/store/auth/authSlice"
-import { act, renderHook } from "@testing-library/react"
+import { act, renderHook, waitFor } from "@testing-library/react"
 
 import { useAuthStore } from "../../src/hooks/useAuthStore"
 import { Provider } from "react-redux"
+import { calendarApi } from "../../src/api/calendarApi"
 
 const getMockStore = (initialState)=>{
   return configureStore({
@@ -19,6 +20,9 @@ const getMockStore = (initialState)=>{
 }
 
 describe('Pruebas en useAuthStore',()=>{
+
+  beforeEach(()=> localStorage.clear())
+
   test('test initialState',()=>{
     const mockStore = getMockStore({status:'checking', // 'checking' | 'authenticated' | 'not-authenticated
     token: "",
@@ -42,7 +46,6 @@ describe('Pruebas en useAuthStore',()=>{
 
 
   test('test startLogin',async ()=>{
-    localStorage.clear()
     const mockStore = getMockStore({
       status : 'not-authenticated',
       token: '',
@@ -79,7 +82,6 @@ describe('Pruebas en useAuthStore',()=>{
   })
 
   test('test startLogin user y contraseña incorrectos',async ()=>{
-    localStorage.clear()
     const mockStore = getMockStore({
       status : 'not-authenticated',
       token: '',
@@ -97,7 +99,7 @@ describe('Pruebas en useAuthStore',()=>{
     await act(async()=>{
       
       await startLogin({
-        email:'andre2323232323221231231s@dukedev.com',
+        email:'andre232323232322221231231s@dukedev.com',
         password:'123321'
       })
     })
@@ -113,6 +115,10 @@ describe('Pruebas en useAuthStore',()=>{
 
     expect(localStorage.getItem('token')).toBe(null)
 
+    await waitFor(()=>{
+      expect(result.current.errorMessage).toBe('')
+    })
+
   })
 
 
@@ -126,10 +132,20 @@ describe('Pruebas en useAuthStore',()=>{
     const {result} =  renderHook(()=>useAuthStore(),{
       wrapper:({children})=><Provider store={mockStore}>{children}</Provider>
     })
+
+    const spy = jest.spyOn(calendarApi,'post').mockReturnValue({
+      data:{
+        "ok": true,
+        "msg": "register",
+        "uid": "65aabedbfcecf3232329cfddc24e",
+        "name": "andres duque",
+        "token": "anyt-token"
+      }
+    })
     const {startRegister} = result.current
     await act(async ()=>{
       const user = {
-        email:'andrestestte1s2222t1@dukedev.com',
+        email:'andreste2s2tte1s22222t1@dukedev.com',
         password:'123321',
         name:'andres test'
       }
@@ -145,5 +161,7 @@ describe('Pruebas en useAuthStore',()=>{
       startLogout: expect.any(Function),
     
     })
+
+    spy.mockRestore()
   })
 })
