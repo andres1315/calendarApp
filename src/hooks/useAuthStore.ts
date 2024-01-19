@@ -40,7 +40,7 @@ export const useAuthStore =()=>{
       }
       const message = error.response.data.msg || 'Unexpected error'
       dispatch(onLogout({errorMessage:message}))
-      setTimeout(() => {dispatch(clearError())}, 1500);
+      setTimeout(() => {dispatch(clearError())}, 10);
     }
   }
 

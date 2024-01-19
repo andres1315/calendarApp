@@ -51,6 +51,8 @@ describe('Pruebas en useUiStore',()=>{
   })
 
   test('closeDateModal debe de cambiar el estado a false',()=>{
+
+    localStorage.clear()
     const mockStore =  getMockStore({isDateModalOpen: true})
     const {result} = renderHook(()=>useUiStore(),{ 
       wrapper: ({children})=>(<Provider store={mockStore}>{children}</Provider>)
